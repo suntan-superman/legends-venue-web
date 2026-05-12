@@ -327,6 +327,37 @@ img { max-width: 100%; display: block; }
   padding: 7px 10px;
   font-size: 0.9rem;
 }
+.event-form .form-field .e-control-wrapper.legends-date-time-control,
+.event-form .form-field .e-control-wrapper.e-input-group.legends-date-time-control {
+  width: 100%;
+  min-height: 36px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: none;
+}
+.event-form .form-field .legends-date-time-control .e-input,
+.event-form .form-field .legends-date-time-control input.e-input {
+  min-height: 34px;
+  padding: 7px 10px;
+  color: #0f172a;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+.event-form .form-field .legends-date-time-control .e-input::placeholder {
+  color: #64748b;
+  font-weight: 700;
+}
+.event-form .form-field .legends-date-time-control .e-input-group-icon {
+  min-height: 34px;
+  color: #334155;
+}
+.event-form .form-field .legends-date-time-control.e-input-focus,
+.event-form .form-field .legends-date-time-control:focus-within {
+  border-color: #d4a017;
+  box-shadow: 0 0 0 2px rgba(212, 160, 23, 0.18);
+}
 .event-form .form-field textarea {
   padding: 8px 10px;
   font-size: 0.88rem;

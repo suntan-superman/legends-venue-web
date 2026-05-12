@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { DatePickerComponent, TimePickerComponent } from "@syncfusion/ej2-react-calendars";
 import { EVENT_TYPES } from "../../config/eventTypes";
 import { VENUE_AREAS } from "../../config/venueAreas";
 import { submitEventRequest } from "../../services/publicVenueApi";
@@ -24,6 +25,65 @@ const initialValues = {
   alternateDate: "",
   callbackRequested: true,
 };
+
+function parseDateValue(value) {
+  if (!value) return null;
+  const [year, month, day] = String(value).split("-").map(Number);
+  if (!year || !month || !day) return null;
+  return new Date(year, month - 1, day);
+}
+
+function formatDateValue(value) {
+  if (!(value instanceof Date) || Number.isNaN(value.getTime())) return "";
+  const year = value.getFullYear();
+  const month = String(value.getMonth() + 1).padStart(2, "0");
+  const day = String(value.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function parseTimeValue(value) {
+  if (!value) return null;
+  const [hours, minutes] = String(value).split(":").map(Number);
+  if (!Number.isFinite(hours) || !Number.isFinite(minutes)) return null;
+  const date = new Date();
+  date.setHours(hours, minutes, 0, 0);
+  return date;
+}
+
+function formatTimeValue(value) {
+  if (!(value instanceof Date) || Number.isNaN(value.getTime())) return "";
+  return `${String(value.getHours()).padStart(2, "0")}:${String(value.getMinutes()).padStart(2, "0")}`;
+}
+
+function DateControl({ value, onChange, placeholder = "Select date", required = false }) {
+  return (
+    <DatePickerComponent
+      cssClass="legends-date-time-control"
+      value={parseDateValue(value)}
+      change={(args) => onChange(formatDateValue(args.value))}
+      format="MM/dd/yyyy"
+      placeholder={placeholder}
+      min={new Date()}
+      showClearButton={!required}
+      openOnFocus
+    />
+  );
+}
+
+function TimeControl({ value, onChange, placeholder = "Select time" }) {
+  return (
+    <TimePickerComponent
+      cssClass="legends-date-time-control"
+      value={parseTimeValue(value)}
+      change={(args) => onChange(formatTimeValue(args.value))}
+      format="h:mm a"
+      placeholder={placeholder}
+      step={15}
+      showClearButton={false}
+      openOnFocus
+    />
+  );
+}
 
 export default function EventRequestForm({ areas = VENUE_AREAS, defaults = {}, onCancel, onSuccess }) {
   const [values, setValues] = useState({ ...initialValues, ...defaults });
@@ -111,16 +171,16 @@ export default function EventRequestForm({ areas = VENUE_AREAS, defaults = {}, o
         </div>
         <div className="form-grid">
         <Field label="Requested date" helper="First-choice event date." error={errors.requestedDate} required>
-          <input value={values.requestedDate} onChange={(event) => patch("requestedDate", event.target.value)} type="date" />
+          <DateControl value={values.requestedDate} onChange={(value) => patch("requestedDate", value)} placeholder="Choose event date" required />
         </Field>
         <Field label="Start time" helper="When guests should arrive or the event begins." error={errors.startTime} required>
-          <input value={values.startTime} onChange={(event) => patch("startTime", event.target.value)} type="time" />
+          <TimeControl value={values.startTime} onChange={(value) => patch("startTime", value)} placeholder="Choose start time" />
         </Field>
         <Field label="End time" helper="Expected event end time." error={errors.endTime} required>
-          <input value={values.endTime} onChange={(event) => patch("endTime", event.target.value)} type="time" />
+          <TimeControl value={values.endTime} onChange={(value) => patch("endTime", value)} placeholder="Choose end time" />
         </Field>
         <Field label="Alternate date" helper="Optional backup date if your first choice is unavailable.">
-          <input value={values.alternateDate} onChange={(event) => patch("alternateDate", event.target.value)} type="date" />
+          <DateControl value={values.alternateDate} onChange={(value) => patch("alternateDate", value)} placeholder="Choose backup date" />
         </Field>
         <Field label="Budget range" helper="Optional planning range for food, room, and services.">
           <select value={values.budgetRange} onChange={(event) => patch("budgetRange", event.target.value)}>
