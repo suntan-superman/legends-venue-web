@@ -550,12 +550,60 @@ img { max-width: 100%; display: block; }
   border-color: var(--legends-accent) !important;
   color: var(--legends-accent-dark) !important;
 }
+.e-calendar .e-content.e-year td.e-selected:hover span.e-day,
+.e-calendar .e-content.e-decade td.e-selected:hover span.e-day,
+.e-calendar .e-content td.e-today:focus span.e-day,
+.e-calendar .e-content td.e-focused-date.e-today:focus span.e-day,
+.e-calendar .e-content td.e-today:hover span.e-day,
+.e-calendar .e-content td.e-focused-date.e-today:hover span.e-day,
+.e-calendar .e-content td.e-focused-date.e-today:focus span.e-day {
+  background-color: var(--legends-accent-soft) !important;
+  border-color: var(--legends-accent) !important;
+  color: var(--legends-accent-dark) !important;
+}
+.e-calendar .e-content td.e-today.e-selected span.e-day,
+.e-calendar .e-content td.e-today.e-selected:hover span.e-day,
+.e-calendar .e-content td.e-selected:hover span.e-day,
+.e-calendar .e-content td.e-selected.e-focused-date span.e-day {
+  background: var(--legends-accent) !important;
+  background-color: var(--legends-accent) !important;
+  border-color: var(--legends-accent) !important;
+  color: #ffffff !important;
+}
 .e-calendar .e-btn.e-flat.e-primary,
 .e-calendar .e-footer-container .e-btn.e-flat.e-primary,
 .e-date-wrapper .e-input-group-icon.e-date-icon.e-icons.e-active,
 .e-time-wrapper .e-input-group-icon.e-time-icon.e-icons.e-active,
 .e-input-group.e-control-wrapper.e-input-focus .e-input-group-icon {
   color: var(--legends-accent) !important;
+}
+.e-outline.e-input-focus label.e-float-text::before,
+.e-outline.e-input-focus label.e-float-text::after,
+.e-outline.e-float-input.e-input-focus label.e-float-text::before,
+.e-outline.e-float-input.e-input-focus label.e-float-text::after,
+.e-outline.e-float-input.e-control-wrapper.e-input-focus label.e-float-text::before,
+.e-outline.e-float-input.e-control-wrapper.e-input-focus label.e-float-text::after {
+  border-top-color: var(--legends-accent) !important;
+}
+.e-outline.e-float-input.e-input-focus:not(.e-error):not(.e-success):not(.e-warning):not(.e-disabled),
+.e-outline.e-float-input.e-input-focus:not(.e-error):not(.e-success):not(.e-warning):not(.e-disabled):not(.e-float-icon-left),
+.e-outline.e-float-input.e-input-group.e-input-focus:not(.e-error):not(.e-success):not(.e-warning):not(.e-disabled):not(.e-float-icon-left),
+.e-outline.e-float-input.e-input-group.e-input-focus:not(.e-error):not(.e-success):not(.e-warning):not(.e-disabled),
+.e-outline.e-float-input.e-control-wrapper.e-input-focus:not(.e-error):not(.e-success):not(.e-warning):not(.e-disabled):not(.e-float-icon-left),
+.e-outline.e-float-input.e-control-wrapper.e-input-focus:not(.e-error):not(.e-success):not(.e-warning):not(.e-disabled),
+.e-outline.e-float-input.e-input-focus:hover:not(.e-error):not(.e-success):not(.e-warning):not(.e-disabled),
+.e-outline.e-float-input.e-input-group.e-input-focus:hover:not(.e-error):not(.e-success):not(.e-warning):not(.e-disabled),
+.e-outline.e-float-input.e-control-wrapper.e-input-focus:hover:not(.e-error):not(.e-success):not(.e-warning):not(.e-disabled),
+.e-outline.e-float-input.e-input-focus:hover:not(.e-error):not(.e-success):not(.e-warning):not(.e-disabled):not(.e-float-icon-left),
+.e-outline.e-float-input.e-input-group.e-input-focus:hover:not(.e-error):not(.e-success):not(.e-warning):not(.e-disabled):not(.e-float-icon-left),
+.e-outline.e-float-input.e-control-wrapper.e-input-focus:hover:not(.e-error):not(.e-success):not(.e-warning):not(.e-disabled):not(.e-float-icon-left) {
+  border-color: var(--legends-accent) !important;
+  border-top-color: transparent !important;
+  box-shadow: inset 1px 0 var(--legends-accent), inset -1px 0 var(--legends-accent), inset 0 -1px var(--legends-accent) !important;
+}
+.e-input-group.e-input-focus:not(.e-error):not(.e-warning):not(.e-success),
+.e-input-group.e-control-wrapper.e-input-focus:not(.e-error):not(.e-warning):not(.e-success) {
+  border-color: var(--legends-accent) !important;
 }
 .e-datepicker.e-popup .e-list-parent.e-ul .e-list-item.e-active,
 .e-timepicker.e-popup .e-list-parent.e-ul .e-list-item.e-active {
@@ -584,6 +632,26 @@ img { max-width: 100%; display: block; }
 }
 .e-schedule .e-month-view .e-date-header-wrap table td.e-current-day,
 .e-schedule .e-month-view .e-work-cells.e-current-date {
+  border-color: var(--legends-accent) !important;
+}
+.e-schedule .e-month-view .e-current-date .e-date-header,
+.e-schedule .e-month-agenda-view .e-current-date .e-date-header,
+.e-schedule .e-timeline-year-view .e-work-cells.e-current-day .e-date-header {
+  background: var(--legends-accent) !important;
+  background-color: var(--legends-accent) !important;
+  border-color: var(--legends-accent) !important;
+  color: #ffffff !important;
+}
+.e-schedule .e-month-view .e-date-header-wrap table td.e-current-day,
+.e-schedule .e-month-agenda-view .e-date-header-wrap table td.e-current-day,
+.e-schedule .e-timeline-view .e-date-header-wrap table td.e-current-day,
+.e-schedule .e-timeline-month-view .e-date-header-wrap table td.e-current-day,
+.e-schedule .e-vertical-view .e-header-cells.e-current-day,
+.e-schedule .e-vertical-view .e-all-day-cells.e-current-day,
+.e-schedule .e-work-hours,
+.e-schedule .e-vertical-view .e-clone-time-indicator,
+.e-schedule .e-vertical-view .e-current-time {
+  color: var(--legends-accent-dark) !important;
   border-color: var(--legends-accent) !important;
 }
 
