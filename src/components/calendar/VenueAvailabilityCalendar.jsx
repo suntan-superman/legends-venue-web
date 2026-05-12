@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Agenda,
   Day,
@@ -33,16 +33,55 @@ function getAvailabilityErrorMessage(error) {
   return error?.message || "Unable to load availability.";
 }
 
+const CALENDAR_STORAGE_KEYS = {
+  view: "legendsAvailabilityCalendar.view",
+  selectedDate: "legendsAvailabilityCalendar.selectedDate",
+  venueAreaId: "legendsAvailabilityCalendar.venueAreaId",
+};
+
+const CALENDAR_VIEWS = new Set(["Day", "Week", "Month", "Agenda"]);
+
+function readStoredValue(key, fallback = "") {
+  try {
+    return window.localStorage?.getItem(key) || fallback;
+  } catch (_) {
+    return fallback;
+  }
+}
+
+function writeStoredValue(key, value) {
+  try {
+    if (value === undefined || value === null || value === "") {
+      window.localStorage?.removeItem(key);
+    } else {
+      window.localStorage?.setItem(key, String(value));
+    }
+  } catch (_) {}
+}
+
+function readStoredDate(key, fallback = new Date()) {
+  const stored = readStoredValue(key, "");
+  const parsed = stored ? new Date(stored) : null;
+  return parsed && !Number.isNaN(parsed.getTime()) ? parsed : fallback;
+}
+
 export default function VenueAvailabilityCalendar() {
+  const scheduleRef = useRef(null);
   const [config, setConfig] = useState(null);
   const [items, setItems] = useState([]);
-  const [areaFilter, setAreaFilter] = useState("");
+  const [areaFilter, setAreaFilter] = useState(() => readStoredValue(CALENDAR_STORAGE_KEYS.venueAreaId, ""));
+  const [calendarView, setCalendarView] = useState(() => {
+    const stored = readStoredValue(CALENDAR_STORAGE_KEYS.view, "");
+    return CALENDAR_VIEWS.has(stored) ? stored : "";
+  });
+  const [calendarDate, setCalendarDate] = useState(() => readStoredDate(CALENDAR_STORAGE_KEYS.selectedDate, new Date()));
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [requestDefaults, setRequestDefaults] = useState({});
   const [success, setSuccess] = useState(null);
   const isMobile = useMemo(() => window.matchMedia?.("(max-width: 720px)")?.matches, []);
+  const activeView = calendarView || (isMobile ? "Agenda" : "Month");
 
   const areas = config?.venueAreas?.length ? config.venueAreas : VENUE_AREAS;
   const visibleAreas = useMemo(
@@ -66,7 +105,7 @@ export default function VenueAvailabilityCalendar() {
       setError("");
       const venueConfig = await fetchVenueConfig();
       setConfig(venueConfig);
-      const range = getVisibleRange(new Date(), 120);
+      const range = getVisibleRange(calendarDate, 120);
       const availability = await fetchVenueAvailability({
         ...range,
         venueAreaId: areaFilter,
@@ -87,7 +126,36 @@ export default function VenueAvailabilityCalendar() {
   useEffect(() => {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [areaFilter]);
+  }, [areaFilter, calendarDate]);
+
+  useEffect(() => {
+    if (!areaFilter || !areas.length) return;
+    const areaExists = areas.some((area) => getAreaId(area) === areaFilter);
+    if (!areaExists) {
+      setAreaFilter("");
+      writeStoredValue(CALENDAR_STORAGE_KEYS.venueAreaId, "");
+    }
+  }, [areaFilter, areas]);
+
+  function handleAreaFilterChange(nextAreaId) {
+    setAreaFilter(nextAreaId);
+    writeStoredValue(CALENDAR_STORAGE_KEYS.venueAreaId, nextAreaId);
+  }
+
+  function handleScheduleActionComplete(args) {
+    const schedule = scheduleRef.current;
+    const nextView = args?.currentView || schedule?.currentView;
+    if (CALENDAR_VIEWS.has(nextView)) {
+      setCalendarView(nextView);
+      writeStoredValue(CALENDAR_STORAGE_KEYS.view, nextView);
+    }
+
+    const nextDate = schedule?.selectedDate || args?.selectedDate || args?.currentDate || null;
+    if (nextDate instanceof Date && !Number.isNaN(nextDate.getTime())) {
+      setCalendarDate(nextDate);
+      writeStoredValue(CALENDAR_STORAGE_KEYS.selectedDate, nextDate.toISOString());
+    }
+  }
 
   function openRequest(defaults = {}) {
     setSuccess(null);
@@ -130,7 +198,7 @@ export default function VenueAvailabilityCalendar() {
           <p>Private Event Calendar</p>
           <h2>Check space availability</h2>
         </div>
-        <VenueAreaFilter areas={areas} value={areaFilter} onChange={setAreaFilter} />
+        <VenueAreaFilter areas={areas} value={areaFilter} onChange={handleAreaFilterChange} />
       </div>
       <div className="notice">
         Private event requests are reviewed by Legends staff. Your reservation is not confirmed until you receive confirmation.
@@ -145,10 +213,11 @@ export default function VenueAvailabilityCalendar() {
       {error ? <div className="form-error">{error}</div> : null}
       {loading ? <div className="loading-panel">Loading availability...</div> : null}
       <ScheduleComponent
+        ref={scheduleRef}
         key={schedulerKey}
         height={isMobile ? "620px" : "720px"}
-        selectedDate={new Date()}
-        currentView={isMobile ? "Agenda" : "Month"}
+        selectedDate={calendarDate}
+        currentView={activeView}
         readonly
         group={{ resources: ["VenueAreas"] }}
         eventSettings={{
@@ -162,6 +231,7 @@ export default function VenueAvailabilityCalendar() {
         }}
         cellClick={handleCellClick}
         eventRendered={handleEventRendered}
+        actionComplete={handleScheduleActionComplete}
         popupOpen={(args) => {
           if (args.type === "Editor") args.cancel = true;
         }}
