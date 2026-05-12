@@ -34,13 +34,19 @@ The public frontend does not write directly to Firebase and does not expose priv
 
 The frontend uses the `/api/public/...` endpoints by default. The non-`/api` paths are backend aliases for compatibility.
 
-The backend needs to resolve the public tenant slug `legends` to the real Merxus tenant. The simplest deployment setting is:
+The backend needs to resolve the public tenant slug `legends` to the real Merxus tenant workspace. This is the `tenants/{tenantId}` document used by the Merxus AI restaurant portal, not necessarily the matching `restaurants/{restaurantId}` profile. The simplest deployment setting is:
 
 ```txt
-LEGENDS_TENANT_ID=<existing Merxus restaurant tenant id>
+LEGENDS_TENANT_ID=<existing Merxus tenant workspace id>
 ```
 
 You can also store a Firestore `publicVenueConfigs/legends` document with `tenantId`, public name, phone, address, and `publicCalendarVisibility`.
+
+For the reusable setup process for Legends-style public venue sites, see:
+
+```txt
+../docs/public_venue_merxus_ai_integration_guide.md
+```
 
 ## Deployment
 
