@@ -52,7 +52,7 @@ img { max-width: 100%; display: block; }
 .nav-links a.active, .nav-links a:hover { color: var(--text); background: rgba(212, 160, 23, 0.14); }
 .header-actions { display: flex; align-items: center; gap: 10px; }
 .menu-button { display: none; }
-.gold-button, .ghost-button, .small-gold-button {
+.gold-button, .ghost-button, .small-gold-button, .secondary-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -79,6 +79,23 @@ img { max-width: 100%; display: block; }
   border-color: var(--line);
   background: rgba(255, 255, 255, 0.04);
 }
+.secondary-button {
+  min-height: 44px;
+  padding: 0 18px;
+  color: #0f172a;
+  border-color: #cbd5e1;
+  background: #ffffff;
+}
+.event-form .gold-button,
+.event-form .secondary-button {
+  min-height: 36px;
+  padding: 0 16px;
+  font-size: 0.86rem;
+}
+.secondary-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
 .small-gold-button {
   min-height: 38px;
   padding: 0 14px;
@@ -96,6 +113,12 @@ img { max-width: 100%; display: block; }
   color: var(--text);
   background: rgba(255, 255, 255, 0.04);
   cursor: pointer;
+}
+.event-modal .icon-button {
+  flex: 0 0 auto;
+  color: #0f172a;
+  border-color: #cbd5e1;
+  background: #ffffff;
 }
 
 .hero {
@@ -119,7 +142,7 @@ img { max-width: 100%; display: block; }
   z-index: 1;
   max-width: 780px;
 }
-.hero-content p, .section-header p, .calendar-toolbar p, .success-card p, .modal-header p {
+.hero-content p, .section-header .section-eyebrow, .calendar-toolbar p, .success-card p, .modal-header p {
   margin: 0 0 10px;
   color: var(--gold);
   text-transform: uppercase;
@@ -169,6 +192,22 @@ img { max-width: 100%; display: block; }
 }
 .content-page.wide { width: min(1440px, calc(100% - 24px)); }
 .content-page.narrow { width: min(900px, calc(100% - 36px)); }
+.request-event-page {
+  display: grid;
+  gap: 22px;
+}
+.request-intro .section-header {
+  max-width: 980px;
+  margin-bottom: 0;
+}
+.event-form-panel {
+  background: #ffffff;
+  color: #111827;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: clamp(18px, 3vw, 30px);
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.28);
+}
 .section-header {
   max-width: 780px;
   margin-bottom: 34px;
@@ -179,6 +218,15 @@ img { max-width: 100%; display: block; }
   line-height: 1.02;
 }
 .section-header div, .section-header > p + h2 + div { color: var(--muted); line-height: 1.6; }
+.section-header .section-copy p {
+  margin: 12px 0 0;
+  color: var(--muted);
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 1.05rem;
+  font-weight: 650;
+  line-height: 1.55;
+}
 .large-copy { color: var(--muted); font-size: 1.15rem; line-height: 1.7; max-width: 640px; }
 .space-grid {
   display: grid;
@@ -273,6 +321,16 @@ img { max-width: 100%; display: block; }
   background: #ffffff;
   color: #0f172a;
 }
+.event-form .form-field input,
+.event-form .form-field select {
+  min-height: 36px;
+  padding: 7px 10px;
+  font-size: 0.9rem;
+}
+.event-form .form-field textarea {
+  padding: 8px 10px;
+  font-size: 0.88rem;
+}
 .notice, .success-panel, .loading-panel, .form-error {
   padding: 14px 16px;
   border-radius: 8px;
@@ -305,58 +363,118 @@ img { max-width: 100%; display: block; }
 
 .event-form {
   display: grid;
-  gap: 18px;
+  gap: 8px;
   color: #111827;
+}
+.form-section {
+  display: grid;
+  gap: 7px;
+  padding: 8px 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+.form-section-header {
+  display: grid;
+  gap: 2px;
+}
+.form-section-header h3 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 0.9rem;
+  line-height: 1.1;
 }
 .form-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px 12px;
+}
+.form-grid.two-column {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 .form-field {
   display: grid;
-  gap: 7px;
+  gap: 3px;
   color: #111827;
   font-weight: 800;
 }
+.form-field span {
+  color: #0f172a;
+  font-size: 0.78rem;
+  line-height: 1.1;
+}
+.form-field em {
+  min-height: 0;
+  color: #64748b;
+  font-size: 0.68rem;
+  font-style: normal;
+  font-weight: 650;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .form-field small { color: #b91c1c; font-weight: 700; }
-.form-field textarea { min-height: 110px; resize: vertical; }
+.form-field textarea { min-height: 54px; resize: vertical; }
 .checkbox-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 14px;
+  gap: 8px;
   color: #111827;
   font-weight: 800;
 }
-.checkbox-row label { display: inline-flex; align-items: center; gap: 8px; }
-.fine-print { color: #475569; line-height: 1.5; margin: 0; }
+.checkbox-row label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border: 1px solid #dbe3ef;
+  border-radius: 8px;
+  background: #ffffff;
+  font-size: 0.82rem;
+}
+.fine-print {
+  color: #475569;
+  line-height: 1.25;
+  margin: 0;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  font-size: 0.82rem;
+}
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
 .submit-button { width: fit-content; }
 .modal-backdrop {
   position: fixed;
   inset: 0;
   z-index: 40;
-  padding: 24px;
+  padding: 10px;
   background: rgba(0, 0, 0, 0.72);
   display: grid;
   place-items: center;
 }
 .event-modal {
-  width: min(960px, 100%);
-  max-height: min(90vh, 900px);
+  width: min(1320px, calc(100vw - 20px));
+  max-height: calc(100vh - 20px);
   overflow: auto;
   background: #ffffff;
   color: #111827;
   border-radius: 8px;
-  padding: 22px;
+  padding: 12px 18px;
 }
 .modal-header {
   display: flex;
   justify-content: space-between;
   gap: 16px;
   align-items: start;
-  margin-bottom: 18px;
+  margin-bottom: 8px;
 }
-.modal-header h2 { margin: 0; }
+.modal-header h2 { margin: 0; font-size: 1.5rem; line-height: 1.1; }
 .success-card {
   padding: 34px;
   color: var(--text);
@@ -406,6 +524,12 @@ img { max-width: 100%; display: block; }
   .gallery-grid img, .gallery-grid img:first-child, .gallery-grid img:nth-child(2), .gallery-grid img:nth-child(n + 3) {
     grid-column: auto;
     height: 220px;
+  }
+}
+
+@media (max-width: 1040px) and (min-width: 681px) {
+  .form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 

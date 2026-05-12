@@ -25,7 +25,7 @@ const initialValues = {
   callbackRequested: true,
 };
 
-export default function EventRequestForm({ areas = VENUE_AREAS, defaults = {}, onSuccess }) {
+export default function EventRequestForm({ areas = VENUE_AREAS, defaults = {}, onCancel, onSuccess }) {
   const [values, setValues] = useState({ ...initialValues, ...defaults });
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
@@ -59,17 +59,29 @@ export default function EventRequestForm({ areas = VENUE_AREAS, defaults = {}, o
 
   return (
     <form className="event-form" onSubmit={handleSubmit}>
-      <div className="form-grid">
-        <Field label="Full name" error={errors.customerName} required>
+      <div className="form-section">
+        <div className="form-section-header">
+          <h3>Contact</h3>
+        </div>
+        <div className="form-grid">
+        <Field label="Full name" helper="Primary contact for the event." error={errors.customerName} required>
           <input value={values.customerName} onChange={(event) => patch("customerName", event.target.value)} autoComplete="name" />
         </Field>
-        <Field label="Phone" error={errors.customerPhone} required>
+        <Field label="Phone" helper="Best number for confirmation or follow-up." error={errors.customerPhone} required>
           <input value={values.customerPhone} onChange={(event) => patch("customerPhone", event.target.value)} inputMode="tel" autoComplete="tel" />
         </Field>
-        <Field label="Email" error={errors.customerEmail}>
+        <Field label="Email" helper="Optional, but useful for written details." error={errors.customerEmail}>
           <input value={values.customerEmail} onChange={(event) => patch("customerEmail", event.target.value)} type="email" autoComplete="email" />
         </Field>
-        <Field label="Event type" error={errors.eventType} required>
+        </div>
+      </div>
+
+      <div className="form-section">
+        <div className="form-section-header">
+          <h3>Event Basics</h3>
+        </div>
+        <div className="form-grid">
+        <Field label="Event type" helper="What kind of event are you planning?" error={errors.eventType} required>
           <select value={values.eventType} onChange={(event) => patch("eventType", event.target.value)}>
             <option value="">Select event type</option>
             {EVENT_TYPES.map((type) => (
@@ -77,16 +89,7 @@ export default function EventRequestForm({ areas = VENUE_AREAS, defaults = {}, o
             ))}
           </select>
         </Field>
-        <Field label="Requested date" error={errors.requestedDate} required>
-          <input value={values.requestedDate} onChange={(event) => patch("requestedDate", event.target.value)} type="date" />
-        </Field>
-        <Field label="Start time" error={errors.startTime} required>
-          <input value={values.startTime} onChange={(event) => patch("startTime", event.target.value)} type="time" />
-        </Field>
-        <Field label="End time" error={errors.endTime} required>
-          <input value={values.endTime} onChange={(event) => patch("endTime", event.target.value)} type="time" />
-        </Field>
-        <Field label="Venue area" error={errors.venueAreaId} required>
+        <Field label="Venue area" helper="Your preferred space at Legends." error={errors.venueAreaId} required>
           <select value={values.venueAreaId} onChange={(event) => patch("venueAreaId", event.target.value)}>
             <option value="">Select venue area</option>
             {mergedAreas.map((area) => (
@@ -96,10 +99,30 @@ export default function EventRequestForm({ areas = VENUE_AREAS, defaults = {}, o
             ))}
           </select>
         </Field>
-        <Field label="Estimated guest count" error={errors.estimatedGuestCount} required>
+        <Field label="Estimated guest count" helper="Approximate number of people attending." error={errors.estimatedGuestCount} required>
           <input value={values.estimatedGuestCount} onChange={(event) => patch("estimatedGuestCount", event.target.value)} type="number" min="1" max="700" />
         </Field>
-        <Field label="Budget range">
+        </div>
+      </div>
+
+      <div className="form-section">
+        <div className="form-section-header">
+          <h3>Date, Time, and Preferences</h3>
+        </div>
+        <div className="form-grid">
+        <Field label="Requested date" helper="First-choice event date." error={errors.requestedDate} required>
+          <input value={values.requestedDate} onChange={(event) => patch("requestedDate", event.target.value)} type="date" />
+        </Field>
+        <Field label="Start time" helper="When guests should arrive or the event begins." error={errors.startTime} required>
+          <input value={values.startTime} onChange={(event) => patch("startTime", event.target.value)} type="time" />
+        </Field>
+        <Field label="End time" helper="Expected event end time." error={errors.endTime} required>
+          <input value={values.endTime} onChange={(event) => patch("endTime", event.target.value)} type="time" />
+        </Field>
+        <Field label="Alternate date" helper="Optional backup date if your first choice is unavailable.">
+          <input value={values.alternateDate} onChange={(event) => patch("alternateDate", event.target.value)} type="date" />
+        </Field>
+        <Field label="Budget range" helper="Optional planning range for food, room, and services.">
           <select value={values.budgetRange} onChange={(event) => patch("budgetRange", event.target.value)}>
             <option value="">Optional</option>
             <option>$1,000 - $2,500</option>
@@ -108,10 +131,7 @@ export default function EventRequestForm({ areas = VENUE_AREAS, defaults = {}, o
             <option>$10,000+</option>
           </select>
         </Field>
-        <Field label="Alternate date">
-          <input value={values.alternateDate} onChange={(event) => patch("alternateDate", event.target.value)} type="date" />
-        </Field>
-        <Field label="Indoor/outdoor preference">
+        <Field label="Indoor/outdoor preference" helper="Let staff know your space preference.">
           <select value={values.indoorOutdoorPreference} onChange={(event) => patch("indoorOutdoorPreference", event.target.value)}>
             <option value="">No preference</option>
             <option>Indoor</option>
@@ -119,33 +139,48 @@ export default function EventRequestForm({ areas = VENUE_AREAS, defaults = {}, o
             <option>Indoor and outdoor</option>
           </select>
         </Field>
+        </div>
       </div>
-      <div className="checkbox-row">
-        <label><input type="checkbox" checked={values.foodServiceNeeded} onChange={(event) => patch("foodServiceNeeded", event.target.checked)} /> Food service needed</label>
-        <label><input type="checkbox" checked={values.barServiceNeeded} onChange={(event) => patch("barServiceNeeded", event.target.checked)} /> Bar service needed</label>
-        <label><input type="checkbox" checked={values.callbackRequested} onChange={(event) => patch("callbackRequested", event.target.checked)} /> Please call me back</label>
+
+      <div className="form-section">
+        <div className="form-section-header">
+          <h3>Services and Notes</h3>
+        </div>
+        <div className="checkbox-row">
+          <label><input type="checkbox" checked={values.foodServiceNeeded} onChange={(event) => patch("foodServiceNeeded", event.target.checked)} /> Food service needed</label>
+          <label><input type="checkbox" checked={values.barServiceNeeded} onChange={(event) => patch("barServiceNeeded", event.target.checked)} /> Bar service needed</label>
+          <label><input type="checkbox" checked={values.callbackRequested} onChange={(event) => patch("callbackRequested", event.target.checked)} /> Please call me back</label>
+        </div>
+        <div className="form-grid two-column">
+          <Field label="Setup or entertainment needs" helper="Examples: tables, staging, karaoke, AV, decor, seating plan, security, or music.">
+            <textarea value={values.setupNeeds} onChange={(event) => patch("setupNeeds", event.target.value)} placeholder="Describe setup, equipment, entertainment, or room layout needs." />
+          </Field>
+          <Field label="Notes / special requests" helper="Anything else the Legends team should know before contacting you.">
+            <textarea value={values.notes} onChange={(event) => patch("notes", event.target.value)} placeholder="Tell us what you are planning." />
+          </Field>
+        </div>
       </div>
-      <Field label="Setup or entertainment needs">
-        <textarea value={values.setupNeeds} onChange={(event) => patch("setupNeeds", event.target.value)} placeholder="Tables, staging, karaoke, AV, decor, seating, or other setup needs." />
-      </Field>
-      <Field label="Notes / special requests">
-        <textarea value={values.notes} onChange={(event) => patch("notes", event.target.value)} placeholder="Tell us what you are planning." />
-      </Field>
       <p className="fine-print">
         Submitting a request does not guarantee availability. A Legends staff member will confirm your reservation.
       </p>
       {submitError ? <div className="form-error">{submitError}</div> : null}
-      <button className="gold-button submit-button" type="submit" disabled={!canSubmit || submitting}>
-        {submitting ? "Submitting..." : "Submit Event Request"}
-      </button>
+      <div className="form-actions">
+        <button className="secondary-button" type="button" onClick={onCancel} disabled={submitting}>
+          Cancel
+        </button>
+        <button className="gold-button submit-button" type="submit" disabled={!canSubmit || submitting}>
+          {submitting ? "Submitting..." : "Submit Event Request"}
+        </button>
+      </div>
     </form>
   );
 }
 
-function Field({ label, error, required, children }) {
+function Field({ label, helper, error, required, children }) {
   return (
     <label className="form-field">
       <span>{label}{required ? " *" : ""}</span>
+      {helper ? <em>{helper}</em> : null}
       {children}
       {error ? <small>{error}</small> : null}
     </label>

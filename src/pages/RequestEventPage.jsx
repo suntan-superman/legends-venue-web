@@ -1,11 +1,12 @@
 import { useMemo, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import EventRequestForm from "../components/forms/EventRequestForm";
 import SectionHeader from "../components/venue/SectionHeader";
 import { siteConfig } from "../config/siteConfig";
 
 export default function RequestEventPage() {
   const [params] = useSearchParams();
+  const navigate = useNavigate();
   const [success, setSuccess] = useState(null);
   const defaults = useMemo(() => ({
     venueAreaId: params.get("area") || "",
@@ -30,11 +31,15 @@ export default function RequestEventPage() {
   }
 
   return (
-    <main className="content-page narrow">
-      <SectionHeader eyebrow="Private event request" title="Tell Legends about your event">
-        <p>Use this form for private event venue rentals, banquets, watch parties, fundraisers, and large gatherings. Dinner reservations are not confirmed from this form.</p>
-      </SectionHeader>
-      <EventRequestForm defaults={defaults} onSuccess={setSuccess} />
+    <main className="content-page wide request-event-page">
+      <section className="request-intro">
+        <SectionHeader eyebrow="Private event request" title="Tell Legends about your event">
+          <p>Use this form for venue rentals, banquets, watch parties, fundraisers, and large gatherings. A staff member will review availability before anything is confirmed.</p>
+        </SectionHeader>
+      </section>
+      <section className="event-form-panel">
+        <EventRequestForm defaults={defaults} onCancel={() => navigate("/availability")} onSuccess={setSuccess} />
+      </section>
     </main>
   );
 }

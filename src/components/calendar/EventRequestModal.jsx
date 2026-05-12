@@ -1,7 +1,17 @@
+import { useEffect } from "react";
 import { X } from "lucide-react";
 import EventRequestForm from "../forms/EventRequestForm";
 
 export default function EventRequestModal({ open, onClose, areas, defaults, onSuccess }) {
+  useEffect(() => {
+    if (!open) return undefined;
+    function handleKeyDown(event) {
+      if (event.key === "Escape") onClose?.();
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [open, onClose]);
+
   if (!open) return null;
   return (
     <div className="modal-backdrop" role="dialog" aria-modal="true" aria-label="Request private event">
@@ -15,7 +25,7 @@ export default function EventRequestModal({ open, onClose, areas, defaults, onSu
             <X />
           </button>
         </div>
-        <EventRequestForm areas={areas} defaults={defaults} onSuccess={onSuccess} />
+        <EventRequestForm areas={areas} defaults={defaults} onCancel={onClose} onSuccess={onSuccess} />
       </div>
     </div>
   );

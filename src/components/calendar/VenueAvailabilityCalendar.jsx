@@ -28,7 +28,7 @@ function getAvailabilityErrorMessage(error) {
     return "Availability is not connected yet. Deploy the Merxus AI backend with the public venue routes and set LEGENDS_TENANT_ID for the Legends tenant.";
   }
   if (String(error?.message || "").includes("Failed to fetch") || String(error?.message || "").includes("ERR_CONNECTION_REFUSED")) {
-    return "Availability is temporarily unavailable because the Merxus AI booking service could not be reached.";
+    return "Availability is not connected yet. Deploy the Merxus AI backend with the public venue routes, allow this website origin in CORS, and set LEGENDS_TENANT_ID for the Legends tenant.";
   }
   return error?.message || "Unable to load availability.";
 }

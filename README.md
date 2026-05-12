@@ -53,3 +53,5 @@ Set these Netlify environment variables:
 - `VITE_MERXUS_API_BASE_URL`
 - `VITE_TENANT_SLUG`
 - `VITE_SYNCFUSION_KEY`
+
+The Merxus AI backend deployment must include `src/routes/publicVenueRoutes.js`, register it from `index.js`, allow the Legends website origin in CORS, and set `LEGENDS_TENANT_ID` to the existing restaurant tenant id that owns the venue hours, areas, and bookings.
