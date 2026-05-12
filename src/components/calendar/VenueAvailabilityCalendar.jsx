@@ -188,6 +188,7 @@ export default function VenueAvailabilityCalendar() {
         open={modalOpen}
         areas={areas}
         defaults={requestDefaults}
+        operatingHours={config?.operatingHours}
         onClose={() => setModalOpen(false)}
         onSuccess={handleSuccess}
       />

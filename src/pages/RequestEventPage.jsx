@@ -1,18 +1,34 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import EventRequestForm from "../components/forms/EventRequestForm";
 import SectionHeader from "../components/venue/SectionHeader";
 import { siteConfig } from "../config/siteConfig";
+import { fetchVenueConfig } from "../services/publicVenueApi";
 
 export default function RequestEventPage() {
   const [params] = useSearchParams();
   const navigate = useNavigate();
   const [success, setSuccess] = useState(null);
+  const [venueConfig, setVenueConfig] = useState(null);
   const defaults = useMemo(() => ({
     venueAreaId: params.get("area") || "",
     eventType: params.get("eventType") || "",
     requestedDate: params.get("date") || "",
   }), [params]);
+
+  useEffect(() => {
+    let isMounted = true;
+    fetchVenueConfig()
+      .then((config) => {
+        if (isMounted) setVenueConfig(config);
+      })
+      .catch(() => {
+        if (isMounted) setVenueConfig(null);
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   if (success) {
     return (
@@ -38,7 +54,13 @@ export default function RequestEventPage() {
         </SectionHeader>
       </section>
       <section className="event-form-panel">
-        <EventRequestForm defaults={defaults} onCancel={() => navigate("/availability")} onSuccess={setSuccess} />
+        <EventRequestForm
+          defaults={defaults}
+          areas={venueConfig?.venueAreas}
+          operatingHours={venueConfig?.operatingHours}
+          onCancel={() => navigate("/availability")}
+          onSuccess={setSuccess}
+        />
       </section>
     </main>
   );

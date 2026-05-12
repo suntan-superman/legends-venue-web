@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { X } from "lucide-react";
 import EventRequestForm from "../forms/EventRequestForm";
 
-export default function EventRequestModal({ open, onClose, areas, defaults, onSuccess }) {
+export default function EventRequestModal({ open, onClose, areas, defaults, operatingHours, onSuccess }) {
   useEffect(() => {
     if (!open) return undefined;
     function handleKeyDown(event) {
@@ -25,7 +25,7 @@ export default function EventRequestModal({ open, onClose, areas, defaults, onSu
             <X />
           </button>
         </div>
-        <EventRequestForm areas={areas} defaults={defaults} onCancel={onClose} onSuccess={onSuccess} />
+        <EventRequestForm areas={areas} defaults={defaults} operatingHours={operatingHours} onCancel={onClose} onSuccess={onSuccess} />
       </div>
     </div>
   );
