@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Agenda,
   Day,
@@ -40,6 +40,10 @@ const CALENDAR_STORAGE_KEYS = {
 };
 
 const CALENDAR_VIEWS = new Set(["Day", "Week", "Month", "Agenda"]);
+const AUTO_REFRESH_MS = Math.max(
+  15000,
+  Number(import.meta.env.VITE_AVAILABILITY_REFRESH_MS || 60000),
+);
 
 function readStoredValue(key, fallback = "") {
   try {
@@ -77,6 +81,7 @@ export default function VenueAvailabilityCalendar() {
   const [calendarDate, setCalendarDate] = useState(() => readStoredDate(CALENDAR_STORAGE_KEYS.selectedDate, new Date()));
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [lastUpdatedAt, setLastUpdatedAt] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [requestDefaults, setRequestDefaults] = useState({});
   const [success, setSuccess] = useState(null);
@@ -99,9 +104,9 @@ export default function VenueAvailabilityCalendar() {
     [areaFilter, resources],
   );
 
-  async function load() {
+  const load = useCallback(async ({ silent = false } = {}) => {
     try {
-      setLoading(true);
+      if (!silent) setLoading(true);
       setError("");
       const venueConfig = await fetchVenueConfig();
       setConfig(venueConfig);
@@ -111,6 +116,7 @@ export default function VenueAvailabilityCalendar() {
         venueAreaId: areaFilter,
       });
       setItems(availability.items || []);
+      setLastUpdatedAt(new Date());
     } catch (loadError) {
       setError(getAvailabilityErrorMessage(loadError));
       setConfig((current) => current || {
@@ -119,14 +125,31 @@ export default function VenueAvailabilityCalendar() {
       });
       setItems([]);
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
-  }
+  }, [areaFilter, calendarDate]);
 
   useEffect(() => {
     load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [areaFilter, calendarDate]);
+  }, [load]);
+
+  useEffect(() => {
+    const refresh = () => load({ silent: true });
+    const intervalId = window.setInterval(refresh, AUTO_REFRESH_MS);
+
+    function handleVisibilityChange() {
+      if (document.visibilityState === "visible") refresh();
+    }
+
+    window.addEventListener("focus", refresh);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      window.clearInterval(intervalId);
+      window.removeEventListener("focus", refresh);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [load]);
 
   useEffect(() => {
     if (!areaFilter || !areas.length) return;
@@ -197,6 +220,10 @@ export default function VenueAvailabilityCalendar() {
         <div>
           <p>Private Event Calendar</p>
           <h2>Check space availability</h2>
+          <span className="calendar-refresh-status">
+            Updates automatically every {Math.round(AUTO_REFRESH_MS / 1000)} seconds
+            {lastUpdatedAt ? ` · Last checked ${lastUpdatedAt.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}` : ""}
+          </span>
         </div>
         <VenueAreaFilter areas={areas} value={areaFilter} onChange={handleAreaFilterChange} />
       </div>
