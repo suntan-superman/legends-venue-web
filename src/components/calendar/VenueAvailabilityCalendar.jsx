@@ -114,6 +114,12 @@ export default function VenueAvailabilityCalendar() {
   function handleSuccess(result) {
     setModalOpen(false);
     setSuccess(result);
+    if (result?.booking) {
+      setItems((current) => {
+        const next = current.filter((item) => item.id !== result.booking.id);
+        return [...next, result.booking];
+      });
+    }
     load();
   }
 
