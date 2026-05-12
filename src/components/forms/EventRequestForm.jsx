@@ -224,12 +224,14 @@ export default function EventRequestForm({ areas = VENUE_AREAS, defaults = {}, o
     try {
       setSubmitting(true);
       const result = await submitEventRequest(values);
-      console.info("[LegendsEventRequest] submitted", {
+      const diagnostics = {
         requestId: result?.requestId,
         status: result?.status,
         notifications: result?.notifications || null,
         warning: result?.warning || null,
-      });
+      };
+      console.info("[LegendsEventRequest] submitted", diagnostics);
+      console.info("[LegendsEventRequest] diagnostics", JSON.stringify(diagnostics, null, 2));
       onSuccess?.(result);
     } catch (error) {
       setSubmitError(error.data?.message || error.data?.error || error.message || "Unable to submit the request.");
