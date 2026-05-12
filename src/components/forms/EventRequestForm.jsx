@@ -234,7 +234,9 @@ export default function EventRequestForm({ areas = VENUE_AREAS, defaults = {}, o
       console.info("[LegendsEventRequest] diagnostics", JSON.stringify(diagnostics, null, 2));
       onSuccess?.(result);
     } catch (error) {
-      setSubmitError(error.data?.message || error.data?.error || error.message || "Unable to submit the request.");
+      const reason = error.data?.conflictReason;
+      const message = error.data?.message || error.data?.error || error.message || "Unable to submit the request.";
+      setSubmitError(reason ? `${message} ${reason}` : message);
     } finally {
       setSubmitting(false);
     }
